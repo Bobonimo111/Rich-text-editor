@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TextEditor</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <style>
+        .options-rich {
+            z-index: 3;
+            top: -35px;
+            height: 35px;
+            padding: 0 3px 0 3px;
+        }
+    </style>
+</head>
+
+<body class="d-flex justify-content-center align-items-center min-vh-100 m-0 p-0 bg-light">
+    <div class="container shadow-lg rounded-3 p-4" style="max-width: 800px; background-color: #ffffff;">
+        <!-- Título -->
+        <h1 class="text-center mb-4 fw-bold text-primary">Rich Text Editor</h1>
+
+        <!-- Campo de escrita -->
+        <div class="mb-3">
+            <textarea class="form-control border-primary" name="text-enter" id="text-enter" rows="5"
+                placeholder="Start typing here..." style="resize: none;"></textarea>
+            <small class="text-muted d-block mt-1 ms-3">Press Enter to submit your text</small>
+        </div>
+
+        <!-- Divisor -->
+        <hr class="my-4 border-2 border-primary">
+
+        <!-- Área de exibição dos textos -->
+        <div id="stay-texts" class="border rounded p-3" style="max-height: 200px; min-height: 120px; overflow-y: auto;">
+
+        </div>
+    </div>
+</body>
+<script src="/js/bootstrap.min.js"></script>
+<script>
+    window.onload = main;
+
+    function main() {
+        const text_enter = document.getElementById("text-enter");
+        const stay_texts = document.getElementById("stay-texts");
+
+        let text = new Text("Your text will appear here");
+        stay_texts.appendChild(text.init());
+
+
+        let text_enter_isfocus = false;
+        text_enter.onfocus = (val) => {
+            text_enter_isfocus = true;
+        }
+        text_enter.onblur = (val) => {
+            text_enter_isfocus = false;
+        }
+        window.addEventListener("keypress", inputText);
+
+        function inputText(e) {
+            if (e.key == "Enter" && text_enter_isfocus) {
+                let textOut = text_enter.value.trim();
+                if (textOut !== undefined && textOut !== "") {
+                    let text = new Text(textOut);
+                    stay_texts.appendChild(text.init());
+                    text_enter.value = "";
+                }
+            }
+        }
+    }
+
+    function Text(text) {
+        this.text = text;
+        this.paragraf = null;
+        this.mainDiv = null;
+        this.optionDiv = null;
+        this.paragrafFontSize = 12;
+    }
+
+
+    Text.prototype.init = function () {
+        this.paragraf = this.createParagraf(this.text)
+        this.mainDiv = document.createElement("div");
+        this.mainDiv.classList.add("position-relative");
+        this.paragraf.addEventListener("click", this.optionsEvent.bind(this));
+        this.mainDiv.appendChild(this.paragraf);
+        this.optionsConfig();
+        // div.innerText ="TEsto"
+        return this.mainDiv;
+    }
+
+    Text.prototype.createParagraf = function (text) {
+        let p = document.createElement("p");
+        p.classList.add("border", "rounded", "bg-light", "p-2", "text-muted", "text-start", "mt-2", "m-0");
+        p.style.fontSize = this.paragrafFontSize + "pt";
+        p.innerText = text;
+        return p;
+    }
+    Text.prototype.buttonStyle = function (html_text, type) {
+        //Texto = Negrito, italico, sublinhado
+        let btn = document.createElement("button");
+        btn.classList.add("btn", "btn-outline-primary", "btn-sm", "me-2");
+        btn.innerHTML = html_text;
+        btn.setAttribute("data-type", type);
+        // let styleEv = this.styleEvent(html_text).bind(this);
+        btn.addEventListener("click", this.styleEvent.bind(this));
+        return btn;
+    }
+
+    Text.prototype.sizeSelect = function () {
+        let select = document.createElement("select");
+        select.classList.add("form-select", "form-select-sm", "me-2");
+        select.style.width = "auto";
+
+        function optionConfig(value,fontsize) {
+            let option = document.createElement("option");
+            let isSelected =  fontsize == Number(value) ? true : false;
+            option.selected = isSelected;
+            option.value = value;
+            option.innerText = value;
+
+            return option;
+        }
+        for (let i = 4; i <= 70; i += 4) {
+            select.appendChild(optionConfig(i,this.paragrafFontSize));
+        }
+        select.addEventListener("change", this.sizeEvent.bind(this));
+        return select;
+    }
+
+
+    //To the futere
+    Text.prototype.fontSelect = function () {
+
+    }
+    Text.prototype.createStyleOp = function () {
+        let div = document.createElement("div");
+        div.classList.add("position-absolute", "d-flex", "w-50", "toolbar", "mb-3", "p-2", "bg-white", "border", "rounded");
+        div.appendChild(this.buttonStyle("<b>B</b>", "negrito"));
+        div.appendChild(this.buttonStyle("<i>I</i>", "italico"));
+        div.appendChild(this.buttonStyle("<u>U</u>", "sublinhado"));
+        div.appendChild(this.sizeSelect());
+
+        // div.innerHTML = `
+        //             <button class="btn btn-outline-primary btn-sm me-2" ><b>B</b></button>
+        //             <button class="btn btn-outline-primary btn-sm me-2"><i>I</i></button>
+        //             <button class="btn btn-outline-primary btn-sm me-2"><u>U</u></button>
+        //             <select class="form-select form-select-sm me-2" style="width: auto;" onchange="changeFontSize(this.value)">
+        //                 <option value="12">12</option>
+        //                 <option value="14">14</option>
+        //                 <option value="16" selected>16</option>
+        //                 <option value="18">18</option>
+        //                 <option value="20">20</option>
+        //             </select>
+        //             <select class="form-select form-select-sm" style="width: auto;" onchange="changeFontFamily(this.value)">
+        //                 <option value="Arial">Arial</option>
+        //                 <option value="Times New Roman">Times New Roman</option>
+        //                 <option value="Verdana" selected>Verdana</option>
+        //                 <option value="Courier New">Courier New</option>
+        //             </select>`;
+        return div;
+    }
+    Text.prototype.optionsConfig = function () {
+        this.options = this.createStyleOp();
+        this.options.style.right = 0;
+        this.options.style.zIndex = "9999";
+        this.options.classList.add("d-none");
+        this.mainDiv.appendChild(this.options);
+    }
+    Text.prototype.optionsEvent = function (ev) {
+        this.options.classList.toggle("d-none")
+    }
+
+    Text.prototype.styleEvent = function (ev) {
+        btn_value = ev.currentTarget.getAttribute("data-type");
+        // console.log(ev);
+        // console.log(btn_value);
+        switch (btn_value) {
+            case "italico":
+                if (this.paragraf.style.fontStyle === "") {
+                    this.paragraf.style.fontStyle = "italic";
+                    return;
+                }
+                this.paragraf.style.fontStyle = "";
+                break;
+            case "sublinhado":
+                if (this.paragraf.style.textDecoration === "") {
+                    this.paragraf.style.textDecoration = "underline";
+                    return;
+                }
+                this.paragraf.style.textDecoration = "";
+                break;
+            case "negrito":
+                if (this.paragraf.style.fontWeight === "") {
+                    this.paragraf.style.fontWeight = "bold";
+                    return;
+                }
+                this.paragraf.style.fontWeight = "";
+                break;
+        }
+    }
+
+    Text.prototype.sizeEvent = function (ev) {
+        let value = ev.target.options[ev.target.selectedIndex].value;
+        this.paragrafFontSize = value;
+        this.paragraf.style.fontSize = this.paragrafFontSize + "pt";
+    }
+
+</script>
+
+</html>
