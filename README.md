@@ -3,11 +3,19 @@ Objetivo desse pequeno projeto é criar um editor de texto interragivel na web, 
 
 ## Metas
 [X] Criar campo de texto;
+
 [X] Negrito.
+
 [X] Italico.
+
 [X] Sublinhado.
+
 [X] Tamanho da fonte.
+
+[ ] Editar texto já criado.
+ 
 [ ] Fonte Family.
+
 [ ] Adicionar Codigo no meio do texto;
 
 ## Ideia de projeto;
