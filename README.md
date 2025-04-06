@@ -19,6 +19,6 @@ Objetivo desse pequeno projeto é criar um editor de texto interragivel na web, 
 [ ] Adicionar Codigo no meio do texto;
 
 ## Ideia de projeto;
-
+.
 Vai ser escrito em TextArea oque o usuario desejar, após isso, sera criado uma div com o texto em questão.
 Nesta div sera possivel alterar caracteristicas especiais do texto como alem do tamanho da font
